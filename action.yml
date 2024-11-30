@@ -1,0 +1,109 @@
+name: 'Docpress'
+description: 'Build portfolio / doc website faster than light'
+
+inputs:
+  branch:
+    description: "Branch used to collect Git provider data."
+    required: false
+    default: "main"
+  extraPublicContent:
+    description: "Comma-separated list of additional files or directories for Vitepress public folder."
+    required: false
+  forks:
+    description: "Create a dedicated fork page for external contributions."
+    required: false
+    default: "false"
+  extraHeaderPages:
+    description: "Comma-separated list of additional files for Vitepress header pages."
+    required: false
+  reposFilter:
+    description: "Comma-separated repositories to retrieve from Git provider. Defaults to all user's public repositories."
+    required: false
+  extraTheme:
+    description: "Comma-separated list of additional files or directories for Vitepress theme."
+    required: false
+  vitepressConfig:
+    description: "Path to the Vitepress configuration file."
+    required: false
+  username:
+    description: "Git provider username to collect data."
+    required: false
+  token:
+    description: "GitHub token to collect data."
+    required: false
+  config:
+    description: "Path to the docpress configuration file."
+    required: false
+  version:
+    description: "Docpress version."
+    required: false
+    default: "latest"
+  deploy:
+    description: "Whether or not to deploy generated website to GitHub Pages."
+    required: false
+    default: "false"
+
+runs:
+  using: "composite"
+  steps:
+    - name: Validate runner environment
+      if: ${{ runner.os != 'Linux' }}
+      shell: bash
+      run: |
+        echo "::error::This action only supports Linux."
+        exit 1
+
+    - name: Setup Node.js with caching
+      uses: actions/setup-node@v4
+      with:
+        node-version: 22
+        cache: 'npm'
+
+    - name: Log inputs
+      shell: bash
+      run: |
+        echo "🔍 Inputs provided:"
+        echo "  - Branch: ${{ inputs.branch }}"
+        echo "  - Forks enabled: ${{ inputs.forks }}"
+        echo "  - Extra public content: ${{ inputs.extraPublicContent }}"
+        echo "  - Extra header pages: ${{ inputs.extraHeaderPages }}"
+        echo "  - Extra theme: ${{ inputs.extraTheme }}"
+        echo "  - Vitepress config: ${{ inputs.vitepressConfig }}"
+        echo "  - Configuration file: ${{ inputs.config }}"
+        echo "  - Docpress version: ${{ inputs.version }}"
+        echo "  - Deploy: ${{ inputs.deploy }}"
+
+    - name: Build website with Docpress
+      shell: bash
+      run: |
+        set -e
+
+        ARGS=(--username "${{ inputs.username != '' && inputs.username || github.actor }}")
+        ARGS+=(--branch "${{ inputs.branch != '' && inputs.branch || 'main' }}")
+
+        [[ -n "${{ inputs.reposFilter }}" ]] && ARGS+=(--repos-filter "${{ inputs.reposFilter }}")
+        [[ -n "${{ inputs.extraPublicContent }}" ]] && ARGS+=(--extra-public-content "${{ inputs.extraPublicContent }}")
+        [[ -n "${{ inputs.extraHeaderPages }}" ]] && ARGS+=(--extra-header-pages "${{ inputs.extraHeaderPages }}")
+        [[ -n "${{ inputs.extraTheme }}" ]] && ARGS+=(--extra-theme "${{ inputs.extraTheme }}")
+        [[ -n "${{ inputs.vitepressConfig }}" ]] && ARGS+=(--vitepress-config "${{ inputs.vitepressConfig }}")
+        [[ -n "${{ inputs.forks }}" ]] && ARGS+=(--forks)
+        [[ -n "${{ inputs.token }}" ]] && ARGS+=(--token "${{ inputs.token }}")
+        [[ -n "${{ inputs.config }}" ]] && ARGS+=(--config "${{ inputs.config }}")
+        
+        echo "🚀 Starting Docpress build process..."
+
+        npx @tobi-or-not/docpress:${{ inputs.version }} "${ARGS[@]}"
+
+        echo "✅ Build completed successfully!"
+
+    - name: Upload static files
+      uses: actions/upload-pages-artifact@v3
+      with:
+        name: github-pages
+        path: docpress/.vitepress/dist
+
+    - name: Deploy to GitHub Pages
+      if: ${{ inputs.deploy == 'true' }}
+      uses: actions/deploy-pages@v4
+      with:
+        artifact_name: github-pages
