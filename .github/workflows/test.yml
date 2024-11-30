@@ -1,0 +1,100 @@
+name: Test Docpress Action
+
+on:
+  workflow_dispatch:
+    inputs:
+      extraPublicContent:
+        description: Comma-separated list of additional files or directories for Vitepress public folder.
+        type: string
+        required: false
+      forks:
+        description: Create a dedicated fork page for external contributions.
+        type: boolean
+        required: false
+        default: true
+      extraHeaderPages:
+        description: Comma-separated list of additional files for Vitepress header pages.
+        type: string
+        required: false
+      reposFilter:
+        description: Comma-separated repositories to retrieve from Git provider. Defaults to all user's public repositories.
+        type: string
+        required: false
+      extraTheme:
+        description: Comma-separated list of additional files or directories for Vitepress theme.
+        type: string
+        required: false
+      vitepressConfig:
+        description: Path to the Vitepress configuration file.
+        type: string
+        required: false
+      config:
+        description: Path to the docpress configuration file.
+        type: string
+        required: false
+      version:
+        description: Docpress version.
+        type: string
+        required: false
+        default: latest
+      deploy:
+        description: Whether or not to deploy generated website to GitHub Pages.
+        type: boolean
+        required: false
+        default: false
+  pull_request: 
+
+env:
+  BRANCH: main
+  USERNAME: this-is-tobi
+  REPOS_FILTER: homelab,docpress
+  VERSION: latest
+
+jobs:
+  test-docpress:
+    runs-on: ubuntu-latest
+    permissions:
+      actions: none
+      checks: none
+      contents: none
+      deployments: none
+      issues: none
+      packages: none
+      pull-requests: none
+      repository-projects: none
+      security-events: none
+      statuses: none
+      attestations: none
+      discussions: none
+      id-token: none
+      pages: write
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Run Docpress action
+        uses: ./
+        with:
+          branch: ${{ env.BRANCH }}
+          forks: ${{ inputs.forks }}
+          deploy: ${{ inputs.deploy }}
+          version: ${{ inputs.version != '' && inputs.version || env.VERSION }}
+          extraPublicContent: ${{ inputs.extraPublicContent }}
+          extraHeaderPages: ${{ inputs.extraHeaderPages }}
+          extraTheme: ${{ inputs.extraTheme }}
+          vitepressConfig: ${{ inputs.vitepressConfig}}
+          reposFilter: ${{ inputs.reposFilter != '' && inputs.reposFilter || env.REPOS_FILTER }}
+          username: ${{ env.USERNAME }}
+          token: ${{ github.token }}
+          config: ${{ inputs.config }}
+
+      - name: Verify generated output
+        run: |
+          if [ ! -d "./docpress/.vitepress/dist" ]; then
+            echo "::error::The output directory does not exist!"
+            exit 1
+          fi
+          echo "Generated output found successfully."
+
+      - name: Cleanup
+        run: rm -rf ./docpress
