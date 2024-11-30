@@ -49,6 +49,8 @@ env:
   USERNAME: this-is-tobi
   REPOS_FILTER: homelab,docpress
   VERSION: latest
+  FORKS: true
+  DEPLOY: false
 
 jobs:
   test-docpress:
@@ -76,8 +78,8 @@ jobs:
         uses: ./
         with:
           branch: ${{ env.BRANCH }}
-          forks: ${{ inputs.forks }}
-          deploy: ${{ inputs.deploy }}
+          forks: ${{ inputs.forks != '' && inputs.forks || env.FORKS }}
+          deploy: ${{ inputs.deploy != '' && inputs.deploy || env.DEPLOY }}
           version: ${{ inputs.version != '' && inputs.version || env.VERSION }}
           extraPublicContent: ${{ inputs.extraPublicContent }}
           extraHeaderPages: ${{ inputs.extraHeaderPages }}
@@ -96,5 +98,8 @@ jobs:
           fi
           echo "Generated output found successfully."
 
-      - name: Cleanup
-        run: rm -rf ./docpress
+      - name: Download artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: github-pages
+          path: /tmp/website

@@ -53,24 +53,19 @@ runs:
         echo "::error::This action only supports Linux."
         exit 1
 
-    - name: Setup Node.js with caching
-      uses: actions/setup-node@v4
-      with:
-        node-version: 22
-
     - name: Log inputs
       shell: bash
       run: |
         echo "🔍 Inputs provided:"
-        echo "  - Branch: ${{ inputs.branch }}"
-        echo "  - Forks enabled: ${{ inputs.forks }}"
-        echo "  - Extra public content: ${{ inputs.extraPublicContent }}"
-        echo "  - Extra header pages: ${{ inputs.extraHeaderPages }}"
-        echo "  - Extra theme: ${{ inputs.extraTheme }}"
-        echo "  - Vitepress config: ${{ inputs.vitepressConfig }}"
-        echo "  - Configuration file: ${{ inputs.config }}"
-        echo "  - Docpress version: ${{ inputs.version }}"
-        echo "  - Deploy: ${{ inputs.deploy }}"
+        echo "  - Branch: ${{ inputs.branch != '' && inputs.branch || '-' }}"
+        echo "  - Forks enabled: ${{ inputs.forks != '' && inputs.forks || '-' }}"
+        echo "  - Extra public content: ${{ inputs.extraPublicContent != '' && inputs.extraPublicContent || '-' }}"
+        echo "  - Extra header pages: ${{ inputs.extraHeaderPages != '' && inputs.extraHeaderPages || '-' }}"
+        echo "  - Extra theme: ${{ inputs.extraTheme != '' && inputs.extraTheme || '-' }}"
+        echo "  - Vitepress config: ${{ inputs.vitepressConfig != '' && inputs.vitepressConfig || '-' }}"
+        echo "  - Configuration file: ${{ inputs.config != '' && inputs.config || '-' }}"
+        echo "  - Docpress version: ${{ inputs.version != '' && inputs.version || '-' }}"
+        echo "  - Deploy: ${{ inputs.deploy != '' && inputs.deploy || '-' }}"
 
     - name: Build website with Docpress
       shell: bash
@@ -91,7 +86,8 @@ runs:
         
         echo "🚀 Starting Docpress build process..."
 
-        npx @tobi-or-not/docpress:${{ inputs.version }} "${ARGS[@]}"
+        docker run --name docpress --rm -v $(pwd)/docpress:/app/docpress:rw --user root \
+          ghcr.io/this-is-tobi/docpress:${{ inputs.version }} "${ARGS[@]}"
 
         echo "✅ Build completed successfully!"
 
