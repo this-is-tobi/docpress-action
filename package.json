@@ -1,0 +1,32 @@
+{
+  "name": "@tobi-or-not/docpress",
+  "type": "module",
+  "version": "0.3.2",
+  "packageManager": "pnpm@9.12.3",
+  "module": "dist/docpress.js",
+  "types": "types/index.d.ts",
+  "bin": {
+    "docpress": "bin/docpress.js"
+  },
+  "files": [
+    "bin",
+    "dist",
+    "types"
+  ],
+  "engines": {
+    "node": ">=20"
+  },
+  "scripts": {
+    "format": "eslint . --fix",
+    "lint": "eslint .",
+    "prepare": "husky"
+  },
+  "devDependencies": {
+    "@antfu/eslint-config": "^3.9.2",
+    "@commitlint/cli": "^19.6.0",
+    "@commitlint/config-conventional": "^19.6.0",
+    "eslint": "^9.15.0",
+    "husky": "^9.1.7",
+    "lint-staged": "^15.2.10"
+  }
+}
