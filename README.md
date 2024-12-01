@@ -20,6 +20,9 @@ on:
 jobs:
   build-and-deploy:
     runs-on: ubuntu-latest
+    permissions:
+      pages: write
+      id-token: write
     steps:
     - name: Checkout code
       uses: actions/checkout@v2
@@ -109,6 +112,9 @@ on:
 jobs:
   build-and-deploy:
     runs-on: ubuntu-latest
+    permissions:
+      pages: write
+      id-token: write
     steps:
     - name: Checkout code
       uses: actions/checkout@v2
@@ -150,6 +156,9 @@ env:
 jobs:
   build-and-deploy:
     runs-on: ubuntu-latest
+    permissions:
+      pages: write
+      id-token: write
     steps:
     - name: Checkout code
       uses: actions/checkout@v2
@@ -182,6 +191,9 @@ env:
 jobs:
   build-and-deploy:
     runs-on: ubuntu-latest
+    permissions:
+      pages: write
+      id-token: write
     steps:
     - name: Checkout code
       uses: actions/checkout@v2
