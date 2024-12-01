@@ -1,0 +1,119 @@
+name: Test Docpress Action
+
+on:
+  workflow_call:
+    inputs:
+      BRANCH:
+        type: string
+        required: false
+        default: main
+      EXTRA_PUBLIC_CONTENT:
+        type: string
+        required: false
+      FORKS:
+        type: boolean
+        required: false
+        default: true
+      EXTRA_HEADER_PAGES:
+        type: string
+        required: false
+      REPOS_FILTER:
+        type: string
+        required: false
+      EXTRA_THEME:
+        type: string
+        required: false
+      VITEPRESS_CONFIG:
+        type: string
+        required: false
+      CONFIG:
+        type: string
+        required: false
+      VERSION:
+        type: string
+        required: false
+        default: latest
+      DEPLOY:
+        type: boolean
+        required: false
+        default: false
+  workflow_dispatch:
+    inputs:
+      EXTRA_PUBLIC_CONTENT:
+        description: Comma-separated list of additional files or directories for Vitepress public folder.
+        type: string
+        required: false
+      FORKS:
+        description: Create a dedicated fork page for external contributions.
+        type: boolean
+        required: false
+        default: true
+      EXTRA_HEADER_PAGES:
+        description: Comma-separated list of additional files for Vitepress header pages.
+        type: string
+        required: false
+      REPOS_FILTER:
+        description: Comma-separated repositories to retrieve from Git provider. Defaults to all user's public repositories.
+        type: string
+        required: false
+      EXTRA_THEME:
+        description: Comma-separated list of additional files or directories for Vitepress theme.
+        type: string
+        required: false
+      VITEPRESS_CONFIG:
+        description: Path to the Vitepress configuration file.
+        type: string
+        required: false
+      CONFIG:
+        description: Path to the docpress configuration file.
+        type: string
+        required: false
+      VERSION:
+        description: Docpress version.
+        type: string
+        required: false
+        default: latest
+      DEPLOY:
+        description: Whether or not to deploy generated website to GitHub Pages.
+        type: boolean
+        required: false
+        default: false
+
+jobs:
+  test-docpress:
+    runs-on: ubuntu-latest
+    permissions:
+      pages: write
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v4
+
+    - name: Run Docpress action
+      uses: ./
+      with:
+        branch: ${{ inputs.BRANCH }}
+        forks: ${{ inputs.forks }}
+        deploy: ${{ inputs.deploy }}
+        version: ${{ inputs.version }}
+        extraPublicContent: ${{ inputs.EXTRA_PUBLIC_CONTENT }}
+        extraHeaderPages: ${{ inputs.EXTRA_HEADER_PAGES }}
+        extraTheme: ${{ inputs.EXTRA_THEME }}
+        vitepressConfig: ${{ inputs.VITEPRESS_CONFIG}}
+        reposFilter: ${{ inputs.REPOS_FILTER }}
+        username: ${{ github.actor }}
+        token: ${{ github.token }}
+        config: ${{ inputs.CONFIG }}
+
+    - name: Verify generated output
+      run: |
+        if [ ! -d "./docpress/.vitepress/dist" ]; then
+          echo "::error::The output directory does not exist!"
+          exit 1
+        fi
+        echo "Generated output found successfully."
+
+    - name: Download artifact
+      uses: actions/download-artifact@v4
+      with:
+        name: github-pages
+        path: /tmp/website
