@@ -21,13 +21,13 @@ jobs:
   build-and-deploy:
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout code
-        uses: actions/checkout@v2
+    - name: Checkout code
+      uses: actions/checkout@v2
 
-      - name: Install and run Docpress
-        uses: this-is-tobi/docpress-action@latest
-        with:
-          deploy: true
+    - name: Install and run Docpress
+      uses: this-is-tobi/docpress-action@latest
+      with:
+        deploy: true
 ```
 
 > [!TIP]
@@ -67,7 +67,7 @@ on:
         type: string
       extraPublicContent:
         description: Comma-separated list of additional files or directories for Vitepress public folder
-        default: ''
+        default: ""
         required: false
         type: string
       forks:
@@ -77,22 +77,22 @@ on:
         type: boolean
       extraHeaderPages:
         description: Comma-separated list of additional files for Vitepress header pages
-        default: ''
+        default: ""
         required: false
         type: string
       reposFilter:
         description: Comma-separated repositories to retrieve from Git provider (defaults to all user\'s public repositories)
-        default: ''
+        default: ""
         required: false
         type: string
       extraTheme:
         description: Comma-separated list of additional files or directories for Vitepress theme
-        default: ''
+        default: ""
         required: false
         type: string
       vitepressConfig:
         description: Path to the Vitepress configuration file (default is .vitepress.config.json)
-        default: ''
+        default: ""
         required: false
         type: string
       version:
@@ -110,21 +110,21 @@ jobs:
   build-and-deploy:
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout code
-        uses: actions/checkout@v2
+    - name: Checkout code
+      uses: actions/checkout@v2
 
-      - name: Deploy website to GitHub Pages
-        uses: this-is-tobi/docpress-action@latest
-        with:
-          branch: ${{ inputs.branch }}
-          extraPublicContent: ${{ inputs.extraPublicContent }}
-          forks: ${{ inputs.forks }}
-          extraHeaderPages: ${{ inputs.extraHeaderPages }}
-          reposFilter: ${{ inputs.reposFilter }}
-          extraTheme: ${{ inputs.extraTheme }}
-          vitepressConfig: ${{ inputs.vitepressConfig }}
-          version: ${{ inputs.version }}
-          deploy: ${{ inputs.deploy }}
+    - name: Deploy website to GitHub Pages
+      uses: this-is-tobi/docpress-action@latest
+      with:
+        branch: ${{ inputs.branch }}
+        extraPublicContent: ${{ inputs.extraPublicContent }}
+        forks: ${{ inputs.forks }}
+        extraHeaderPages: ${{ inputs.extraHeaderPages }}
+        reposFilter: ${{ inputs.reposFilter }}
+        extraTheme: ${{ inputs.extraTheme }}
+        vitepressConfig: ${{ inputs.vitepressConfig }}
+        version: ${{ inputs.version }}
+        deploy: ${{ inputs.deploy }}
 ```
 
 With schedule :
@@ -134,7 +134,7 @@ name: My Website with Custom Configuration
 
 on:
   schedule:
-    - cron: '0 2 * * *'
+  - cron: "0 2 * * *"
 
 env:
   branch: main
@@ -151,21 +151,21 @@ jobs:
   build-and-deploy:
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout code
-        uses: actions/checkout@v2
+    - name: Checkout code
+      uses: actions/checkout@v2
 
-      - name: Deploy website to GitHub Pages
-        uses: this-is-tobi/docpress-action@latest
-        with:
-          branch: ${{ env.branch }}
-          extraPublicContent: ${{ env.extraPublicContent }}
-          forks: ${{ env.forks }}
-          extraHeaderPages: ${{ env.extraHeaderPages }}
-          reposFilter: ${{ env.reposFilter }}
-          extraTheme: ${{ env.extraTheme }}
-          vitepressConfig: ${{ env.vitepressConfig }}
-          version: ${{ env.version }}
-          deploy: ${{ env.deploy }}
+    - name: Deploy website to GitHub Pages
+      uses: this-is-tobi/docpress-action@latest
+      with:
+        branch: ${{ env.branch }}
+        extraPublicContent: ${{ env.extraPublicContent }}
+        forks: ${{ env.forks }}
+        extraHeaderPages: ${{ env.extraHeaderPages }}
+        reposFilter: ${{ env.reposFilter }}
+        extraTheme: ${{ env.extraTheme }}
+        vitepressConfig: ${{ env.vitepressConfig }}
+        version: ${{ env.version }}
+        deploy: ${{ env.deploy }}
 ```
 
 With [Docpress config](https://github.com/this-is-tobi/docpress/blob/main/docs/03-advanced-usage.md#docpress-configuration) :
@@ -183,13 +183,13 @@ jobs:
   build-and-deploy:
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout code
-        uses: actions/checkout@v2
+    - name: Checkout code
+      uses: actions/checkout@v2
 
-      - name: Deploy website to GitHub Pages
-        uses: this-is-tobi/docpress-action@latest
-        with:
-          config: ${{ env.config }}
+    - name: Deploy website to GitHub Pages
+      uses: this-is-tobi/docpress-action@latest
+      with:
+        config: ${{ env.config }}
 ```
 
 ## Contributing

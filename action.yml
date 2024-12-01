@@ -1,104 +1,104 @@
-name: 'Docpress'
-description: 'Build portfolio / doc website faster than light'
+name: Docpress
+description: Build portfolio / doc website faster than light
 
 inputs:
   branch:
-    description: "Branch used to collect Git provider data."
+    description: Branch used to collect Git provider data.
     required: false
-    default: "main"
+    default: main
   extraPublicContent:
-    description: "Comma-separated list of additional files or directories for Vitepress public folder."
+    description: Comma-separated list of additional files or directories for Vitepress public folder.
     required: false
   forks:
-    description: "Create a dedicated fork page for external contributions."
+    description: Create a dedicated fork page for external contributions.
     required: false
     default: "false"
   extraHeaderPages:
-    description: "Comma-separated list of additional files for Vitepress header pages."
+    description: Comma-separated list of additional files for Vitepress header pages.
     required: false
   reposFilter:
     description: "Comma-separated repositories to retrieve from Git provider. Defaults to all user's public repositories."
     required: false
   extraTheme:
-    description: "Comma-separated list of additional files or directories for Vitepress theme."
+    description: Comma-separated list of additional files or directories for Vitepress theme.
     required: false
   vitepressConfig:
-    description: "Path to the Vitepress configuration file."
+    description: Path to the Vitepress configuration file.
     required: false
   username:
-    description: "Git provider username to collect data."
+    description: Git provider username to collect data.
     required: false
   token:
-    description: "GitHub token to collect data."
+    description: GitHub token to collect data.
     required: false
   config:
-    description: "Path to the docpress configuration file."
+    description: Path to the docpress configuration file.
     required: false
   version:
-    description: "Docpress version."
+    description: Docpress version.
     required: false
-    default: "latest"
+    default: latest
   deploy:
-    description: "Whether or not to deploy generated website to GitHub Pages."
+    description: Whether or not to deploy generated website to GitHub Pages.
     required: false
     default: "false"
 
 runs:
-  using: "composite"
+  using: composite
   steps:
-    - name: Validate runner environment
-      if: ${{ runner.os != 'Linux' }}
-      shell: bash
-      run: |
-        echo "::error::This action only supports Linux."
-        exit 1
+  - name: Validate runner environment
+    if: ${{ runner.os != 'Linux' }}
+    shell: bash
+    run: |
+      echo "::error::This action only supports Linux."
+      exit 1
 
-    - name: Log inputs
-      shell: bash
-      run: |
-        echo "🔍 Inputs provided:"
-        echo "  - Branch: ${{ inputs.branch != '' && inputs.branch || '-' }}"
-        echo "  - Forks enabled: ${{ inputs.forks != '' && inputs.forks || '-' }}"
-        echo "  - Extra public content: ${{ inputs.extraPublicContent != '' && inputs.extraPublicContent || '-' }}"
-        echo "  - Extra header pages: ${{ inputs.extraHeaderPages != '' && inputs.extraHeaderPages || '-' }}"
-        echo "  - Extra theme: ${{ inputs.extraTheme != '' && inputs.extraTheme || '-' }}"
-        echo "  - Vitepress config: ${{ inputs.vitepressConfig != '' && inputs.vitepressConfig || '-' }}"
-        echo "  - Configuration file: ${{ inputs.config != '' && inputs.config || '-' }}"
-        echo "  - Docpress version: ${{ inputs.version != '' && inputs.version || '-' }}"
-        echo "  - Deploy: ${{ inputs.deploy != '' && inputs.deploy || '-' }}"
+  - name: Log inputs
+    shell: bash
+    run: |
+      echo "🔍 Inputs provided:"
+      echo "  - Branch: ${{ inputs.branch != '' && inputs.branch || '-' }}"
+      echo "  - Forks enabled: ${{ inputs.forks != '' && inputs.forks || '-' }}"
+      echo "  - Extra public content: ${{ inputs.extraPublicContent != '' && inputs.extraPublicContent || '-' }}"
+      echo "  - Extra header pages: ${{ inputs.extraHeaderPages != '' && inputs.extraHeaderPages || '-' }}"
+      echo "  - Extra theme: ${{ inputs.extraTheme != '' && inputs.extraTheme || '-' }}"
+      echo "  - Vitepress config: ${{ inputs.vitepressConfig != '' && inputs.vitepressConfig || '-' }}"
+      echo "  - Configuration file: ${{ inputs.config != '' && inputs.config || '-' }}"
+      echo "  - Docpress version: ${{ inputs.version != '' && inputs.version || '-' }}"
+      echo "  - Deploy: ${{ inputs.deploy != '' && inputs.deploy || '-' }}"
 
-    - name: Build website with Docpress
-      shell: bash
-      run: |
-        set -e
+  - name: Build website with Docpress
+    shell: bash
+    run: |
+      set -e
 
-        ARGS=(--username "${{ inputs.username != '' && inputs.username || github.actor }}")
-        ARGS+=(--branch "${{ inputs.branch != '' && inputs.branch || 'main' }}")
+      ARGS=(--username "${{ inputs.username != '' && inputs.username || github.actor }}")
+      ARGS+=(--branch "${{ inputs.branch != '' && inputs.branch || 'main' }}")
 
-        [[ -n "${{ inputs.reposFilter }}" ]] && ARGS+=(--repos-filter "${{ inputs.reposFilter }}")
-        [[ -n "${{ inputs.extraPublicContent }}" ]] && ARGS+=(--extra-public-content "${{ inputs.extraPublicContent }}")
-        [[ -n "${{ inputs.extraHeaderPages }}" ]] && ARGS+=(--extra-header-pages "${{ inputs.extraHeaderPages }}")
-        [[ -n "${{ inputs.extraTheme }}" ]] && ARGS+=(--extra-theme "${{ inputs.extraTheme }}")
-        [[ -n "${{ inputs.vitepressConfig }}" ]] && ARGS+=(--vitepress-config "${{ inputs.vitepressConfig }}")
-        [[ -n "${{ inputs.forks }}" ]] && ARGS+=(--forks)
-        [[ -n "${{ inputs.token }}" ]] && ARGS+=(--token "${{ inputs.token }}")
-        [[ -n "${{ inputs.config }}" ]] && ARGS+=(--config "${{ inputs.config }}")
-        
-        echo "🚀 Starting Docpress build process..."
+      [[ -n "${{ inputs.reposFilter }}" ]] && ARGS+=(--repos-filter "${{ inputs.reposFilter }}")
+      [[ -n "${{ inputs.extraPublicContent }}" ]] && ARGS+=(--extra-public-content "${{ inputs.extraPublicContent }}")
+      [[ -n "${{ inputs.extraHeaderPages }}" ]] && ARGS+=(--extra-header-pages "${{ inputs.extraHeaderPages }}")
+      [[ -n "${{ inputs.extraTheme }}" ]] && ARGS+=(--extra-theme "${{ inputs.extraTheme }}")
+      [[ -n "${{ inputs.vitepressConfig }}" ]] && ARGS+=(--vitepress-config "${{ inputs.vitepressConfig }}")
+      [[ -n "${{ inputs.forks }}" ]] && ARGS+=(--forks)
+      [[ -n "${{ inputs.token }}" ]] && ARGS+=(--token "${{ inputs.token }}")
+      [[ -n "${{ inputs.config }}" ]] && ARGS+=(--config "${{ inputs.config }}")
 
-        docker run --name docpress --rm -v $(pwd)/docpress:/app/docpress:rw --user root \
-          ghcr.io/this-is-tobi/docpress:${{ inputs.version }} "${ARGS[@]}"
+      echo "🚀 Starting Docpress build process..."
 
-        echo "✅ Build completed successfully!"
+      docker run --name docpress --rm -v $(pwd)/docpress:/app/docpress:rw --user root \
+        ghcr.io/this-is-tobi/docpress:${{ inputs.version }} "${ARGS[@]}"
 
-    - name: Upload static files
-      uses: actions/upload-pages-artifact@v3
-      with:
-        name: github-pages
-        path: docpress/.vitepress/dist
+      echo "✅ Build completed successfully!"
 
-    - name: Deploy to GitHub Pages
-      if: ${{ inputs.deploy == 'true' }}
-      uses: actions/deploy-pages@v4
-      with:
-        artifact_name: github-pages
+  - name: Upload static files
+    uses: actions/upload-pages-artifact@v3
+    with:
+      name: github-pages
+      path: docpress/.vitepress/dist
+
+  - name: Deploy to GitHub Pages
+    if: ${{ inputs.deploy == 'true' }}
+    uses: actions/deploy-pages@v4
+    with:
+      artifact_name: github-pages
