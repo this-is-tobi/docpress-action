@@ -20,12 +20,15 @@ on:
 jobs:
   build-and-deploy:
     runs-on: ubuntu-latest
+    permissions:
+      pages: write
+      id-token: write
     steps:
     - name: Checkout code
       uses: actions/checkout@v2
 
     - name: Install and run Docpress
-      uses: this-is-tobi/docpress-action@latest
+      uses: this-is-tobi/docpress-action@v0
       with:
         deploy: true
 ```
@@ -109,12 +112,15 @@ on:
 jobs:
   build-and-deploy:
     runs-on: ubuntu-latest
+    permissions:
+      pages: write
+      id-token: write
     steps:
     - name: Checkout code
       uses: actions/checkout@v2
 
     - name: Deploy website to GitHub Pages
-      uses: this-is-tobi/docpress-action@latest
+      uses: this-is-tobi/docpress-action@v0
       with:
         branch: ${{ inputs.branch }}
         extraPublicContent: ${{ inputs.extraPublicContent }}
@@ -150,12 +156,15 @@ env:
 jobs:
   build-and-deploy:
     runs-on: ubuntu-latest
+    permissions:
+      pages: write
+      id-token: write
     steps:
     - name: Checkout code
       uses: actions/checkout@v2
 
     - name: Deploy website to GitHub Pages
-      uses: this-is-tobi/docpress-action@latest
+      uses: this-is-tobi/docpress-action@v0
       with:
         branch: ${{ env.branch }}
         extraPublicContent: ${{ env.extraPublicContent }}
@@ -182,12 +191,15 @@ env:
 jobs:
   build-and-deploy:
     runs-on: ubuntu-latest
+    permissions:
+      pages: write
+      id-token: write
     steps:
     - name: Checkout code
       uses: actions/checkout@v2
 
     - name: Deploy website to GitHub Pages
-      uses: this-is-tobi/docpress-action@latest
+      uses: this-is-tobi/docpress-action@v0
       with:
         config: ${{ env.config }}
 ```
