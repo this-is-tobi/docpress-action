@@ -28,7 +28,7 @@ jobs:
       uses: actions/checkout@v2
 
     - name: Install and run Docpress
-      uses: this-is-tobi/docpress-action@latest
+      uses: this-is-tobi/docpress-action@v0
       with:
         deploy: true
 ```
@@ -120,7 +120,7 @@ jobs:
       uses: actions/checkout@v2
 
     - name: Deploy website to GitHub Pages
-      uses: this-is-tobi/docpress-action@latest
+      uses: this-is-tobi/docpress-action@v0
       with:
         branch: ${{ inputs.branch }}
         extraPublicContent: ${{ inputs.extraPublicContent }}
@@ -164,7 +164,7 @@ jobs:
       uses: actions/checkout@v2
 
     - name: Deploy website to GitHub Pages
-      uses: this-is-tobi/docpress-action@latest
+      uses: this-is-tobi/docpress-action@v0
       with:
         branch: ${{ env.branch }}
         extraPublicContent: ${{ env.extraPublicContent }}
@@ -199,7 +199,7 @@ jobs:
       uses: actions/checkout@v2
 
     - name: Deploy website to GitHub Pages
-      uses: this-is-tobi/docpress-action@latest
+      uses: this-is-tobi/docpress-action@v0
       with:
         config: ${{ env.config }}
 ```
