@@ -37,7 +37,7 @@ inputs:
   version:
     description: Docpress version.
     required: false
-    default: latest
+    default: "0"
   deploy:
     description: Whether or not to deploy generated website to GitHub Pages.
     required: false
