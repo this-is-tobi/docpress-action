@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.1.1](https://github.com/this-is-tobi/docpress-action/compare/v0.1.0...v0.1.1) (2024-12-14)
+
+
+### Bug Fixes
+
+* pin docpress version to v0 ([36953ab](https://github.com/this-is-tobi/docpress-action/commit/36953ab25a20307c7e3878570ef834b34564d8d6))
+
 ## [0.1.0](https://github.com/this-is-tobi/docpress-action/compare/v0.0.1...v0.1.0) (2024-12-01)
 
 
