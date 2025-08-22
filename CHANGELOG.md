@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.1.2](https://github.com/this-is-tobi/docpress-action/compare/v0.1.1...v0.1.2) (2025-08-22)
+
+
+### Bug Fixes
+
+* wrong input flags usernames ([1d15dd7](https://github.com/this-is-tobi/docpress-action/commit/1d15dd74c61eb721ea48e692c809959e4faa6f8c))
+
 ## [0.1.1](https://github.com/this-is-tobi/docpress-action/compare/v0.1.0...v0.1.1) (2024-12-14)
 
 
