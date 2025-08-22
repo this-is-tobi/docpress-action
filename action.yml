@@ -25,8 +25,8 @@ inputs:
   vitepressConfig:
     description: Path to the Vitepress configuration file.
     required: false
-  username:
-    description: Git provider username to collect data.
+  usernames:
+    description: Comma-separated list of git provider usernames to collect data.
     required: false
   token:
     description: GitHub token to collect data.
@@ -72,7 +72,7 @@ runs:
     run: |
       set -e
 
-      ARGS=(--username "${{ inputs.username != '' && inputs.username || github.actor }}")
+      ARGS=(--usernames "${{ inputs.usernames != '' && inputs.usernames || github.actor }}")
       ARGS+=(--branch "${{ inputs.branch != '' && inputs.branch || 'main' }}")
 
       [[ -n "${{ inputs.reposFilter }}" ]] && ARGS+=(--repos-filter "${{ inputs.reposFilter }}")

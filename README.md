@@ -38,20 +38,20 @@ jobs:
 
 ## Inputs
 
-| Input                | Description                                                                                                                                                                            | Default Value     |
-| -------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ----------------- |
-| `branch`             | The branch used to collect Git provider data                                                                                                                                           | `main`            |
-| `extraPublicContent` | Comma-separated list of additional files or directories for Vitepress public folder. This can be useful for adding custom content, such as images or videos, to your site.             | -                 |
-| `forks`              | Create a dedicated fork page for external contributions. When set to true, the Action will generate a separate page listing all contributors and their respective contributions.       | `false`           |
-| `extraHeaderPages`   | Comma-separated list of additional files for Vitepress header pages. This can be used to add custom navigation or other dynamic elements to your site's headers.                       | -                 |
-| `reposFilter`        | Comma-separated repositories to retrieve from Git provider. Defaults to all user's public repositories, but you can filter the results by specifying specific repository names or IDs. | -                 |
-| `extraTheme`         | Comma-separated list of additional files or directories for Vitepress theme. This allows you to customize the look and feel of your site with ease.                                    | -                 |
-| `vitepressConfig`    | Path to the Vitepress configuration file. By default, the Action will use the default vitepress configuration. If you need to specify a custom config, provide its path here.          | -                 |
-| `username`           | Git provider username to collect data. This can be used to filter results by user or to retrieve specific repositories from a shared account.                                          | `<your_username>` |
-| `token`              | GitHub token to collect data. Make sure to set this securely, as it will grant access to your repositories and settings.                                                               | -                 |
-| `config`             | Path to the docpress configuration file. This allows you to customize the Action's behavior by specifying a custom config file.                                                        | -                 |
-| `version`            | Docpress version. You can specify a specific version or use 'latest' for the most recent one.                                                                                          | `latest`          |
-| `deploy`             | Whether or not to deploy generated website to GitHub Pages. Set this to true if you want your site to be publicly accessible.                                                          | `false`           |
+| Input                | Description                                                                                                                                                                            | Default Value      |
+| -------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------ |
+| `branch`             | The branch used to collect Git provider data                                                                                                                                           | `main`             |
+| `extraPublicContent` | Comma-separated list of additional files or directories for Vitepress public folder. This can be useful for adding custom content, such as images or videos, to your site.             | -                  |
+| `forks`              | Create a dedicated fork page for external contributions. When set to true, the Action will generate a separate page listing all contributors and their respective contributions.       | `false`            |
+| `extraHeaderPages`   | Comma-separated list of additional files for Vitepress header pages. This can be used to add custom navigation or other dynamic elements to your site's headers.                       | -                  |
+| `reposFilter`        | Comma-separated repositories to retrieve from Git provider. Defaults to all user's public repositories, but you can filter the results by specifying specific repository names or IDs. | -                  |
+| `extraTheme`         | Comma-separated list of additional files or directories for Vitepress theme. This allows you to customize the look and feel of your site with ease.                                    | -                  |
+| `vitepressConfig`    | Path to the Vitepress configuration file. By default, the Action will use the default vitepress configuration. If you need to specify a custom config, provide its path here.          | -                  |
+| `usernames`          | Comma-separated list of git provider usernames to collect data. This can be used to filter results by user or to retrieve specific repositories from a shared account.                 | `<your_usernames>` |
+| `token`              | GitHub token to collect data. Make sure to set this securely, as it will grant access to your repositories and settings.                                                               | -                  |
+| `config`             | Path to the docpress configuration file. This allows you to customize the Action's behavior by specifying a custom config file.                                                        | -                  |
+| `version`            | Docpress version. You can specify a specific version or use 'latest' for the most recent one.                                                                                          | `latest`           |
+| `deploy`             | Whether or not to deploy generated website to GitHub Pages. Set this to true if you want your site to be publicly accessible.                                                          | `false`            |
 
 ## Advanced usage
 

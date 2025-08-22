@@ -101,7 +101,7 @@ jobs:
         extraTheme: ${{ inputs.EXTRA_THEME }}
         vitepressConfig: ${{ inputs.VITEPRESS_CONFIG}}
         reposFilter: ${{ inputs.REPOS_FILTER }}
-        username: ${{ github.actor }}
+        usernames: ${{ github.actor }}
         token: ${{ github.token }}
         config: ${{ inputs.CONFIG }}
 
