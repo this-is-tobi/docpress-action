@@ -4,11 +4,13 @@ on:
   push:
     branches:
     - main
+    paths:
+    - "!.github/**"
   workflow_dispatch:
 
 env:
-  NODE_VERSION: 22.18.0
-  PNPM_VERSION: 10.15.0
+  NODE_VERSION: 24.14.0
+  PNPM_VERSION: 10.32.1
 
 jobs:
   expose-vars:
