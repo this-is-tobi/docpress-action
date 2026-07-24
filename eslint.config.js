@@ -32,7 +32,7 @@ export default antfu(
     },
     ignores: [
       '**/node_modules',
-      '**/pnpm-lock.yaml',
+      '**/bun.lock',
       '**/.turbo',
       '**/tsconfig.json',
       '**/dist/',
