@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.1.3](https://github.com/this-is-tobi/docpress-action/compare/v0.1.2...v0.1.3) (2026-07-24)
+
+
+### Bug Fixes
+
+* bump GitHub Pages actions to latest and pin them to commit SHA ([7571bf0](https://github.com/this-is-tobi/docpress-action/commit/7571bf01046448d0e08b8cabacc26c09e4e7877d))
+
 ## [0.1.2](https://github.com/this-is-tobi/docpress-action/compare/v0.1.1...v0.1.2) (2025-08-22)
 
 
