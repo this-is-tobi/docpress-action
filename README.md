@@ -50,7 +50,7 @@ jobs:
 | `usernames`          | Comma-separated list of git provider usernames to collect data. This can be used to filter results by user or to retrieve specific repositories from a shared account.                 | `<your_usernames>` |
 | `token`              | GitHub token to collect data. Make sure to set this securely, as it will grant access to your repositories and settings.                                                               | -                  |
 | `config`             | Path to the docpress configuration file. This allows you to customize the Action's behavior by specifying a custom config file.                                                        | -                  |
-| `version`            | Docpress version. You can specify a specific version or use 'latest' for the most recent one.                                                                                          | `latest`           |
+| `version`            | Docpress version. Defaults to the `0` major tag, which floats to the latest 0.x release; you can pin a specific version or use 'latest' for the most recent one (including future majors). | `0`                |
 | `deploy`             | Whether or not to deploy generated website to GitHub Pages. Set this to true if you want your site to be publicly accessible.                                                          | `false`            |
 
 ## Advanced usage
