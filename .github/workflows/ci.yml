@@ -47,7 +47,7 @@ jobs:
       id-token: write
     with:
       BRANCH: main
-      FORKS: true
+      CONTRIBUTIONS: true
       REPOS_FILTER: "homelab,docpress,dotfiles"
 
   # Workaround for required status check in protection branches (see. https://github.com/orgs/community/discussions/13690)
