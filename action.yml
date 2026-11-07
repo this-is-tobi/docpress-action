@@ -53,44 +53,47 @@ runs:
       echo "::error::This action only supports Linux."
       exit 1
 
-  - name: Log inputs
-    shell: bash
-    run: |
-      echo "🔍 Inputs provided:"
-      echo "  - Branch: ${{ inputs.branch != '' && inputs.branch || '-' }}"
-      echo "  - Forks enabled: ${{ inputs.forks != '' && inputs.forks || '-' }}"
-      echo "  - Extra public content: ${{ inputs.extraPublicContent != '' && inputs.extraPublicContent || '-' }}"
-      echo "  - Extra header pages: ${{ inputs.extraHeaderPages != '' && inputs.extraHeaderPages || '-' }}"
-      echo "  - Extra theme: ${{ inputs.extraTheme != '' && inputs.extraTheme || '-' }}"
-      echo "  - Vitepress config: ${{ inputs.vitepressConfig != '' && inputs.vitepressConfig || '-' }}"
-      echo "  - Configuration file: ${{ inputs.config != '' && inputs.config || '-' }}"
-      echo "  - Docpress version: ${{ inputs.version != '' && inputs.version || '-' }}"
-      echo "  - Deploy: ${{ inputs.deploy != '' && inputs.deploy || '-' }}"
-
   - name: Build website with Docpress
     shell: bash
+    # Inputs reach the script as environment variables rather than being expanded into it,
+    # so a value cannot break the quoting or inject commands
+    env:
+      INPUT_BRANCH: ${{ inputs.branch }}
+      INPUT_CONFIG: ${{ inputs.config }}
+      INPUT_EXTRA_HEADER_PAGES: ${{ inputs.extraHeaderPages }}
+      INPUT_EXTRA_PUBLIC_CONTENT: ${{ inputs.extraPublicContent }}
+      INPUT_EXTRA_THEME: ${{ inputs.extraTheme }}
+      INPUT_FORKS: ${{ inputs.forks }}
+      INPUT_REPOS_FILTER: ${{ inputs.reposFilter }}
+      INPUT_TOKEN: ${{ inputs.token }}
+      INPUT_USERNAMES: ${{ inputs.usernames }}
+      INPUT_VERSION: ${{ inputs.version }}
+      INPUT_VITEPRESS_CONFIG: ${{ inputs.vitepressConfig }}
     run: |
-      set -e
+      set -euo pipefail
 
-      ARGS=(--usernames "${{ inputs.usernames != '' && inputs.usernames || github.actor }}")
-      ARGS+=(--branch "${{ inputs.branch != '' && inputs.branch || 'main' }}")
+      ARGS=(--usernames "${INPUT_USERNAMES:-$GITHUB_ACTOR}")
+      ARGS+=(--branch "${INPUT_BRANCH:-main}")
 
-      [[ -n "${{ inputs.reposFilter }}" ]] && ARGS+=(--repos-filter "${{ inputs.reposFilter }}")
-      [[ -n "${{ inputs.extraPublicContent }}" ]] && ARGS+=(--extra-public-content "${{ inputs.extraPublicContent }}")
-      [[ -n "${{ inputs.extraHeaderPages }}" ]] && ARGS+=(--extra-header-pages "${{ inputs.extraHeaderPages }}")
-      [[ -n "${{ inputs.extraTheme }}" ]] && ARGS+=(--extra-theme "${{ inputs.extraTheme }}")
-      [[ -n "${{ inputs.vitepressConfig }}" ]] && ARGS+=(--vitepress-config "${{ inputs.vitepressConfig }}")
-      [[ -n "${{ inputs.forks }}" ]] && ARGS+=(--forks)
-      [[ -n "${{ inputs.token }}" ]] && ARGS+=(--token "${{ inputs.token }}")
-      [[ -n "${{ inputs.config }}" ]] && ARGS+=(--config "${{ inputs.config }}")
+      [[ -n "$INPUT_REPOS_FILTER" ]] && ARGS+=(--repos-filter "$INPUT_REPOS_FILTER")
+      [[ -n "$INPUT_EXTRA_PUBLIC_CONTENT" ]] && ARGS+=(--extra-public-content "$INPUT_EXTRA_PUBLIC_CONTENT")
+      [[ -n "$INPUT_EXTRA_HEADER_PAGES" ]] && ARGS+=(--extra-header-pages "$INPUT_EXTRA_HEADER_PAGES")
+      [[ -n "$INPUT_EXTRA_THEME" ]] && ARGS+=(--extra-theme "$INPUT_EXTRA_THEME")
+      [[ -n "$INPUT_VITEPRESS_CONFIG" ]] && ARGS+=(--vitepress-config "$INPUT_VITEPRESS_CONFIG")
+      [[ -n "$INPUT_FORKS" ]] && ARGS+=(--forks)
+      [[ -n "$INPUT_CONFIG" ]] && ARGS+=(--config "$INPUT_CONFIG")
 
       echo "🚀 Starting Docpress build process..."
+      echo "docpress$(printf ' %q' "${ARGS[@]}")"
+
+      # Added after the arguments are printed, to keep the token out of the logs
+      [[ -n "$INPUT_TOKEN" ]] && ARGS+=(--token "$INPUT_TOKEN")
 
       # docpress resolves the config file, the extras and its output against its working
       # directory. The workspace is mounted below /app rather than at its own path, so that
       # module resolution still finds the image's dependencies in /app/node_modules
       docker run --name docpress --rm -v "$(pwd):/app/workspace" -w /app/workspace --user root \
-        ghcr.io/this-is-tobi/docpress:${{ inputs.version }} "${ARGS[@]}"
+        "ghcr.io/this-is-tobi/docpress:$INPUT_VERSION" "${ARGS[@]}"
 
       echo "✅ Build completed successfully!"
 
