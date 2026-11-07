@@ -1,224 +1,153 @@
 # Docpress action 🤖
 
-Automate your portfolio or documentation website using [Docpress](https://github.com/this-is-tobi/docpress). This GitHub Action collects data from GitHub, builds the site with Vitepress, and deploys it to GitHub Pages.
+Automate your portfolio or documentation website with [Docpress](https://github.com/this-is-tobi/docpress). This GitHub Action collects the documentation of your repositories from GitHub or GitLab, builds the website with Vitepress, and can deploy it to GitHub Pages.
 
-## Description
+## Usage
 
-This GitHub Action is designed to simplify the process of creating a portfolio or documentation website. It integrates seamlessly with Docpress and Vitepress to generate a beautiful, customizable site that showcases your work.
-
-### Usage
-
-Here is a basic example of how to use the GitHub Action:
+The following workflow builds the website of the repository owner on each push to `main`, with a contributions page, and deploys it to GitHub Pages:
 
 ```yml
-name: My Website
+name: Website
+
 on:
+  push:
+    branches:
+    - main
   workflow_dispatch:
-    inputs:
-      deploy: true
 
 jobs:
-  build-and-deploy:
+  website:
     runs-on: ubuntu-latest
     permissions:
       pages: write
       id-token: write
+    environment:
+      name: github-pages
+      url: ${{ steps.docpress.outputs.page_url }}
     steps:
-    - name: Checkout code
-      uses: actions/checkout@v2
+    - name: Checkout repository
+      uses: actions/checkout@v7
 
-    - name: Install and run Docpress
+    - name: Build and deploy the website
+      id: docpress
       uses: this-is-tobi/docpress-action@v0
       with:
+        contributions: true
         deploy: true
 ```
 
 > [!TIP]
-> If you want to deploy your site to GitHub Pages, set the `deploy` input to `true`, like in the example above.
+> GitHub Pages has to deploy from GitHub Actions: in the repository settings, under *Pages*, set *Source* to *GitHub Actions*.
+
+Without `deploy: true`, the website is still built in `docpress/.vitepress/dist` and uploaded as a GitHub Pages artifact, for the next steps or for a later job using [actions/deploy-pages](https://github.com/actions/deploy-pages).
+
+The action runs the [docpress image](https://github.com/this-is-tobi/docpress/pkgs/container/docpress), so it needs a Linux runner with Docker, such as `ubuntu-latest`.
 
 ## Inputs
 
-| Input                | Description                                                                                                                                                                            | Default Value      |
-| -------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------ |
-| `branch`             | The branch used to collect Git provider data                                                                                                                                           | `main`             |
-| `extraPublicContent` | Comma-separated list of additional files or directories for Vitepress public folder. This can be useful for adding custom content, such as images or videos, to your site.             | -                  |
-| `forks`              | Create a dedicated fork page for external contributions. When set to true, the Action will generate a separate page listing all contributors and their respective contributions.       | `false`            |
-| `extraHeaderPages`   | Comma-separated list of additional files for Vitepress header pages. This can be used to add custom navigation or other dynamic elements to your site's headers.                       | -                  |
-| `reposFilter`        | Comma-separated repositories to retrieve from Git provider. Defaults to all user's public repositories, but you can filter the results by specifying specific repository names or IDs. | -                  |
-| `extraTheme`         | Comma-separated list of additional files or directories for Vitepress theme. This allows you to customize the look and feel of your site with ease.                                    | -                  |
-| `vitepressConfig`    | Path to the Vitepress configuration file. By default, the Action will use the default vitepress configuration. If you need to specify a custom config, provide its path here.          | -                  |
-| `usernames`          | Comma-separated list of git provider usernames to collect data. This can be used to filter results by user or to retrieve specific repositories from a shared account.                 | `<your_usernames>` |
-| `token`              | GitHub token to collect data. Make sure to set this securely, as it will grant access to your repositories and settings.                                                               | -                  |
-| `config`             | Path to the docpress configuration file. This allows you to customize the Action's behavior by specifying a custom config file.                                                        | -                  |
-| `version`            | Docpress version. Defaults to the `0` major tag, which floats to the latest 0.x release; you can pin a specific version or use 'latest' for the most recent one (including future majors). | `0`                |
-| `deploy`             | Whether or not to deploy generated website to GitHub Pages. Set this to true if you want your site to be publicly accessible.                                                          | `false`            |
+Every docpress command line option has an input, named like the matching key of the [configuration file](#configuration-file). Only the inputs that are set are passed to docpress.
 
-## Advanced usage
+| Input | Description | Default |
+| --- | --- | --- |
+| `acronyms` | Comma-separated words kept exactly as written in generated sidebar labels and home page titles, such as `CLI` or `API`. | - |
+| `branch` | Branch used to collect Git provider data. Defaults to each repository's own default branch. | - |
+| `config` | Path to the docpress configuration file, relative to the repository root. Only the inputs that are set are passed to docpress, and they take precedence over the file. | - |
+| `contributions` | Set to `true` to create the contributions page, listing the public repositories owned by others where the user's pull requests were merged. | - |
+| `contributionsFilter` | Comma-separated owners (`owner`) or repositories (`owner/repo`) shown on the contributions page. Prefix an entry with `!` to hide it instead. | - |
+| `extraHeaderPages` | Comma-separated list of additional files or directories for Vitepress header pages. | - |
+| `extraPublicContent` | Comma-separated list of additional files or directories for Vitepress public folder. | - |
+| `extraTheme` | Comma-separated list of additional files or directories for Vitepress theme. | - |
+| `forks` | Deprecated alias of contributions. | - |
+| `gitProvider` | Git provider used to retrieve data, `github` or `gitlab`. Defaults to `github`. | - |
+| `lastUpdated` | Set to `true` to show the date of each page's last Git commit. | - |
+| `logLevel` | Verbosity of the docpress output, among `error`, `warn`, `info`, `trace` and `debug`. Defaults to `info`. | - |
+| `reposFilter` | Comma-separated repositories to retrieve from Git provider. Defaults to all user's public repositories. | - |
+| `sidebarCollapsed` | Collapse behaviour of the generated sidebar groups. `true` collapses them, `false` expands them, `null` makes them non-collapsible. | - |
+| `sidebarMode` | Shape of the generated sidebar. `single` lists every repository in one sidebar, `multi` gives each repository its own. | - |
+| `token` | Token used to collect data from the Git provider. Defaults to the workflow token for GitHub. | - |
+| `usernames` | Comma-separated list of git provider usernames to collect data. Defaults to the repository owner, unless a configuration file is given. | - |
+| `vitepressConfig` | Path to the Vitepress configuration file. | - |
+| `websiteTagline` | Website tagline. | - |
+| `websiteTitle` | Website title. | - |
+| `version` | Docpress version, a tag of the ghcr.io/this-is-tobi/docpress image. Defaults to the latest 0.x release. | `0` |
+| `deploy` | Whether or not to deploy generated website to GitHub Pages. | `false` |
+| `artifactName` | Name of the uploaded GitHub Pages artifact, to tell apart several builds in one workflow run. | `github-pages` |
 
-With a manual trigger :
+## Outputs
+
+| Output | Description |
+| --- | --- |
+| `page_url` | URL of the deployed website, when deploy is `true`. |
+
+## Configuration file
+
+A [docpress configuration file](https://github.com/this-is-tobi/docpress/blob/main/docs/03-advanced-usage.md#docpress-configuration) holds the same options and more, such as the home page hero or the Vitepress configuration. Give its path with `config`:
 
 ```yml
-name: My Website with Custom Configuration
-
-on:
-  workflow_dispatch:
-    inputs:
-      branch:
-        description: The branch used to collect Git provider data
-        default: main
-        required: true
-        type: string
-      extraPublicContent:
-        description: Comma-separated list of additional files or directories for Vitepress public folder
-        default: ""
-        required: false
-        type: string
-      forks:
-        description: Create a dedicated fork page for external contributions
-        default: true
-        required: false
-        type: boolean
-      extraHeaderPages:
-        description: Comma-separated list of additional files for Vitepress header pages
-        default: ""
-        required: false
-        type: string
-      reposFilter:
-        description: Comma-separated repositories to retrieve from Git provider (defaults to all user\'s public repositories)
-        default: ""
-        required: false
-        type: string
-      extraTheme:
-        description: Comma-separated list of additional files or directories for Vitepress theme
-        default: ""
-        required: false
-        type: string
-      vitepressConfig:
-        description: Path to the Vitepress configuration file (default is .vitepress.config.json)
-        default: ""
-        required: false
-        type: string
-      version:
-        description: Docpress version (use \'latest\' for the most recent one)
-        default: latest
-        required: false
-        type: string
-      deploy:
-        description: Whether or not to deploy generated website to GitHub Pages
-        default: false
-        required: false
-        type: boolean
-
-jobs:
-  build-and-deploy:
-    runs-on: ubuntu-latest
-    permissions:
-      pages: write
-      id-token: write
-    steps:
-    - name: Checkout code
-      uses: actions/checkout@v2
-
-    - name: Deploy website to GitHub Pages
-      uses: this-is-tobi/docpress-action@v0
-      with:
-        branch: ${{ inputs.branch }}
-        extraPublicContent: ${{ inputs.extraPublicContent }}
-        forks: ${{ inputs.forks }}
-        extraHeaderPages: ${{ inputs.extraHeaderPages }}
-        reposFilter: ${{ inputs.reposFilter }}
-        extraTheme: ${{ inputs.extraTheme }}
-        vitepressConfig: ${{ inputs.vitepressConfig }}
-        version: ${{ inputs.version }}
-        deploy: ${{ inputs.deploy }}
+- name: Build and deploy the website
+  id: docpress
+  uses: this-is-tobi/docpress-action@v0
+  with:
+    config: ./docpress.config.json
+    deploy: true
 ```
 
-With schedule :
+- Paths, in the inputs and in the file, are relative to the repository root.
+- Inputs that are set take precedence over the file, so keep each option in one place.
+- With a configuration file, the usernames no longer default to the repository owner: set them in the file or with `usernames`.
 
-```yaml
-name: My Website with Custom Configuration
+## Token
+
+The action passes docpress the workflow token, so its GitHub API requests are authenticated. Set `token` to use another one, such as a personal access token for a higher rate limit, or a GitLab token: GitLab never receives the workflow token. docpress reads the token from the environment since version 0.10.2, so an older `version` builds without one.
+
+## Manual and scheduled runs
+
+```yml
+name: Website
 
 on:
   schedule:
   - cron: "0 2 * * *"
-
-env:
-  branch: main
-  extraPublicContent: ./extras/public
-  forks: true
-  extraHeaderPages: ./extras/pages
-  reposFilter: repo1,repo2,repo3
-  extraTheme: ./extras/theme
-  vitepressConfig: ./extras/.vitepress.config.json
-  version: latest
-  deploy: false
-
-jobs:
-  build-and-deploy:
-    runs-on: ubuntu-latest
-    permissions:
-      pages: write
-      id-token: write
-    steps:
-    - name: Checkout code
-      uses: actions/checkout@v2
-
-    - name: Deploy website to GitHub Pages
-      uses: this-is-tobi/docpress-action@v0
-      with:
-        branch: ${{ env.branch }}
-        extraPublicContent: ${{ env.extraPublicContent }}
-        forks: ${{ env.forks }}
-        extraHeaderPages: ${{ env.extraHeaderPages }}
-        reposFilter: ${{ env.reposFilter }}
-        extraTheme: ${{ env.extraTheme }}
-        vitepressConfig: ${{ env.vitepressConfig }}
-        version: ${{ env.version }}
-        deploy: ${{ env.deploy }}
-```
-
-With [Docpress config](https://github.com/this-is-tobi/docpress/blob/main/docs/03-advanced-usage.md#docpress-configuration) :
-
-```yaml
-name: My Website with Custom Configuration
-
-on:
   workflow_dispatch:
-
-env:
-  config: ./docpress.config.json
+    inputs:
+      deploy:
+        description: Deploy the website to GitHub Pages
+        type: boolean
+        default: false
 
 jobs:
-  build-and-deploy:
+  website:
     runs-on: ubuntu-latest
     permissions:
       pages: write
       id-token: write
+    environment:
+      name: github-pages
+      url: ${{ steps.docpress.outputs.page_url }}
     steps:
-    - name: Checkout code
-      uses: actions/checkout@v2
+    - name: Checkout repository
+      uses: actions/checkout@v7
 
-    - name: Deploy website to GitHub Pages
+    - name: Build the website
+      id: docpress
       uses: this-is-tobi/docpress-action@v0
       with:
-        config: ${{ env.config }}
+        config: ./docpress.config.json
+        # Scheduled runs always deploy, manual runs only when asked
+        deploy: ${{ github.event_name == 'schedule' || inputs.deploy }}
 ```
-
-## Contributing
-
-Contributions are welcome! If you have a feature or bugfix to propose, please create an issue or submit a pull request. We're always happy to discuss new ideas and collaborate with other developers.
 
 ## Troubleshooting
 
-*   Make sure the Action is configured correctly, especially when specifying custom configurations for Vitepress.
-*   Verify that your GitHub token has the necessary permissions to access the repositories and settings you need.
-*   If deploying to GitHub Pages fails, check if there are any errors in the deployment process or if the site has been deployed successfully.
+- `Cannot read config file`: the path is relative to the repository root, and the repository has to be checked out before the action runs.
+- The deployment fails: the job needs the `pages: write` and `id-token: write` permissions and the `github-pages` environment, and GitHub Pages has to deploy from GitHub Actions.
+- A repository is missing: docpress only lists public repositories, and reads each one from its own default branch unless `branch` says otherwise.
 
-## Links to Relevant Documentation
+## Contributing
 
-For more information about Docpress and Vitepress, please refer to their respective documentation:
+Contributions are welcome! If you have a feature or bugfix to propose, please create an issue or submit a pull request.
 
-*   [Docpress](https://this-is-tobi.com/docpress/introduction)
-*   [Vitepress](https://vitepress.dev/)
+## Links
 
-I hope this updated version of your README file is helpful in communicating the features and usage of your GitHub Action!
+- [Docpress](https://this-is-tobi.com/docpress/introduction)
+- [Vitepress](https://vitepress.dev/)
