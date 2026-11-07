@@ -1,14 +1,41 @@
 {
   "$schema": "https://docs.renovatebot.com/renovate-schema.json",
   "extends": [
-    "config:recommended"
+    "config:recommended",
+    ":semanticCommits",
+    "helpers:pinGitHubActionDigests"
   ],
-  "semanticCommits": "enabled",
+  "timezone": "Europe/Paris",
+  "schedule": ["before 6am on monday"],
+  "prConcurrentLimit": 5,
+  "minimumReleaseAge": "3 days",
+  "labels": ["dependencies"],
+  "lockFileMaintenance": {
+    "enabled": true,
+    "schedule": ["before 6am on the first day of the month"]
+  },
+  "osvVulnerabilityAlerts": true,
+  "vulnerabilityAlerts": {
+    "enabled": true,
+    "labels": ["dependencies", "security"],
+    "schedule": ["at any time"]
+  },
   "packageRules": [
     {
-      "description": "Actions embedded in action.yml run on behalf of consumers, so bumps land as 'fix' to cut a patch release and move the v0 tag downstream repos consume. Our release-please config (release-type: simple, default versioning strategy) only bumps the version for 'fix'/'feat'/breaking commits, not 'build' or 'chore' - so this must stay 'fix' to actually trigger a release.",
+      "description": "Group non-major updates into a single PR to keep review cheap",
+      "matchUpdateTypes": ["minor", "patch", "digest"],
+      "groupName": "non-major dependencies"
+    },
+    {
+      "description": "Majors stay separate, they need a deliberate look",
+      "matchUpdateTypes": ["major"],
+      "dependencyDashboardApproval": true
+    },
+    {
+      "description": "Actions embedded in action.yml run on behalf of consumers, so bumps land as 'fix' to cut a patch release and move the v0 tag downstream repos consume. Our release-please config (release-type: simple, default versioning strategy) only bumps the version for 'fix'/'feat'/breaking commits, not 'build' or 'chore' - so this must stay 'fix' to actually trigger a release. They get a group of their own, so that the chores of the non-major group do not decide the type of their commit.",
       "matchManagers": ["github-actions"],
       "matchFileNames": ["action.yml"],
+      "groupName": "actions run by the action",
       "semanticCommitType": "fix",
       "commitMessageTopic": "{{depName}}"
     },
@@ -20,9 +47,19 @@
       "commitMessageTopic": "{{depName}}"
     },
     {
-      "description": "this-is-tobi/github-workflows is referenced via its moving v0 major tag on purpose - don't pin or bump it.",
+      "description": "Keep the bun pin in package.json and mise.toml in one PR",
+      "matchPackageNames": ["bun", "oven-sh/bun"],
+      "groupName": "bun"
+    },
+    {
+      "description": "No wait for our own reusable workflows: a fix released there has to reach this repository at once",
       "matchDepNames": ["this-is-tobi/github-workflows"],
-      "enabled": false
+      "minimumReleaseAge": null
+    },
+    {
+      "description": "Lock file maintenance has no release timestamp for Renovate to age, so with minimumReleaseAge set its renovate/stability-days status stays pending forever. bun enforces the same age itself while it regenerates bun.lock (bunfig.toml), which is the check that actually protects the lock file",
+      "matchUpdateTypes": ["lockFileMaintenance"],
+      "minimumReleaseAge": null
     }
   ]
 }
