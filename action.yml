@@ -66,6 +66,7 @@ inputs:
   version:
     description: Docpress version, a tag of the ghcr.io/this-is-tobi/docpress image. Defaults to the release pinned by this version of the action; "0" follows the latest 0.x release instead.
     required: false
+    # renovate: datasource=docker depName=ghcr.io/this-is-tobi/docpress
     default: 0.15.0
   deploy:
     description: Whether or not to deploy generated website to GitHub Pages.
