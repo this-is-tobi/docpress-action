@@ -62,11 +62,6 @@ on:
       USERNAMES:
         type: string
         required: false
-      # An empty value passed to the action would override its default
-      VERSION:
-        type: string
-        required: false
-        default: "0"
       VITEPRESS_CONFIG:
         type: string
         required: false
@@ -109,7 +104,6 @@ jobs:
         sidebarCollapsed: ${{ inputs.SIDEBAR_COLLAPSED }}
         sidebarMode: ${{ inputs.SIDEBAR_MODE }}
         usernames: ${{ inputs.USERNAMES }}
-        version: ${{ inputs.VERSION }}
         vitepressConfig: ${{ inputs.VITEPRESS_CONFIG }}
         websiteTagline: ${{ inputs.WEBSITE_TAGLINE }}
         websiteTitle: ${{ inputs.WEBSITE_TITLE }}
