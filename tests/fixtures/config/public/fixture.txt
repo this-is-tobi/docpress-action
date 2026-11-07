@@ -1,0 +1,1 @@
+Extra public content given by the configuration file test.
