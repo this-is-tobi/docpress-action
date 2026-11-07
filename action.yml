@@ -86,7 +86,10 @@ runs:
 
       echo "🚀 Starting Docpress build process..."
 
-      docker run --name docpress --rm -v $(pwd)/docpress:/app/docpress:rw --user root \
+      # docpress resolves the config file, the extras and its output against its working
+      # directory. The workspace is mounted below /app rather than at its own path, so that
+      # module resolution still finds the image's dependencies in /app/node_modules
+      docker run --name docpress --rm -v "$(pwd):/app/workspace" -w /app/workspace --user root \
         ghcr.io/this-is-tobi/docpress:${{ inputs.version }} "${ARGS[@]}"
 
       echo "✅ Build completed successfully!"
