@@ -2,38 +2,69 @@ name: Docpress
 description: Build portfolio / doc website faster than light
 
 inputs:
+  acronyms:
+    description: Comma-separated words kept exactly as written in generated sidebar labels and home page titles, such as "CLI" or "API".
+    required: false
   branch:
     description: Branch used to collect Git provider data. Defaults to each repository's own default branch.
-    required: false
-  extraPublicContent:
-    description: Comma-separated list of additional files or directories for Vitepress public folder.
-    required: false
-  forks:
-    description: Set to "true" to create a dedicated page for external contributions.
-    required: false
-  extraHeaderPages:
-    description: Comma-separated list of additional files for Vitepress header pages.
-    required: false
-  reposFilter:
-    description: "Comma-separated repositories to retrieve from Git provider. Defaults to all user's public repositories."
-    required: false
-  extraTheme:
-    description: Comma-separated list of additional files or directories for Vitepress theme.
-    required: false
-  vitepressConfig:
-    description: Path to the Vitepress configuration file.
-    required: false
-  usernames:
-    description: Comma-separated list of git provider usernames to collect data. Defaults to the repository owner, unless a configuration file is given.
-    required: false
-  token:
-    description: Token used to collect data from the Git provider. Defaults to the workflow token for GitHub.
     required: false
   config:
     description: Path to the docpress configuration file, relative to the repository root. Only the inputs that are set are passed to docpress, and they take precedence over the file.
     required: false
+  contributions:
+    description: Set to "true" to create the contributions page, listing the public repositories owned by others where the user's pull requests were merged.
+    required: false
+  contributionsFilter:
+    description: Comma-separated owners ("owner") or repositories ("owner/repo") shown on the contributions page. Prefix an entry with "!" to hide it instead.
+    required: false
+  extraHeaderPages:
+    description: Comma-separated list of additional files or directories for Vitepress header pages.
+    required: false
+  extraPublicContent:
+    description: Comma-separated list of additional files or directories for Vitepress public folder.
+    required: false
+  extraTheme:
+    description: Comma-separated list of additional files or directories for Vitepress theme.
+    required: false
+  forks:
+    description: Deprecated alias of contributions.
+    deprecationMessage: The forks input is deprecated, use contributions instead.
+    required: false
+  gitProvider:
+    description: Git provider used to retrieve data, "github" or "gitlab". Defaults to "github".
+    required: false
+  lastUpdated:
+    description: Set to "true" to show the date of each page's last Git commit.
+    required: false
+  logLevel:
+    description: Verbosity of the docpress output, among "error", "warn", "info", "trace" and "debug". Defaults to "info".
+    required: false
+  reposFilter:
+    description: "Comma-separated repositories to retrieve from Git provider. Defaults to all user's public repositories."
+    required: false
+  sidebarCollapsed:
+    description: Collapse behaviour of the generated sidebar groups. "true" collapses them, "false" expands them, "null" makes them non-collapsible.
+    required: false
+  sidebarMode:
+    description: Shape of the generated sidebar. "single" lists every repository in one sidebar, "multi" gives each repository its own.
+    required: false
+  token:
+    description: Token used to collect data from the Git provider. Defaults to the workflow token for GitHub.
+    required: false
+  usernames:
+    description: Comma-separated list of git provider usernames to collect data. Defaults to the repository owner, unless a configuration file is given.
+    required: false
+  vitepressConfig:
+    description: Path to the Vitepress configuration file.
+    required: false
+  websiteTagline:
+    description: Website tagline.
+    required: false
+  websiteTitle:
+    description: Website title.
+    required: false
   version:
-    description: Docpress version.
+    description: Docpress version, a tag of the ghcr.io/this-is-tobi/docpress image. Defaults to the latest 0.x release.
     required: false
     default: "0"
   deploy:
@@ -56,16 +87,26 @@ runs:
     # Inputs reach the script as environment variables rather than being expanded into it,
     # so a value cannot break the quoting or inject commands
     env:
+      INPUT_ACRONYMS: ${{ inputs.acronyms }}
       INPUT_BRANCH: ${{ inputs.branch }}
       INPUT_CONFIG: ${{ inputs.config }}
+      INPUT_CONTRIBUTIONS: ${{ inputs.contributions }}
+      INPUT_CONTRIBUTIONS_FILTER: ${{ inputs.contributionsFilter }}
       INPUT_EXTRA_HEADER_PAGES: ${{ inputs.extraHeaderPages }}
       INPUT_EXTRA_PUBLIC_CONTENT: ${{ inputs.extraPublicContent }}
       INPUT_EXTRA_THEME: ${{ inputs.extraTheme }}
       INPUT_FORKS: ${{ inputs.forks }}
+      INPUT_GIT_PROVIDER: ${{ inputs.gitProvider }}
+      INPUT_LAST_UPDATED: ${{ inputs.lastUpdated }}
+      INPUT_LOG_LEVEL: ${{ inputs.logLevel }}
       INPUT_REPOS_FILTER: ${{ inputs.reposFilter }}
+      INPUT_SIDEBAR_COLLAPSED: ${{ inputs.sidebarCollapsed }}
+      INPUT_SIDEBAR_MODE: ${{ inputs.sidebarMode }}
       INPUT_USERNAMES: ${{ inputs.usernames }}
       INPUT_VERSION: ${{ inputs.version }}
       INPUT_VITEPRESS_CONFIG: ${{ inputs.vitepressConfig }}
+      INPUT_WEBSITE_TAGLINE: ${{ inputs.websiteTagline }}
+      INPUT_WEBSITE_TITLE: ${{ inputs.websiteTitle }}
       # docpress reads its token from the environment, which keeps it off the command line.
       # An explicit token serves either provider; otherwise GitHub gets the workflow token
       DOCPRESS_TOKEN: ${{ inputs.token }}
@@ -73,23 +114,43 @@ runs:
     run: |
       set -euo pipefail
 
+      ARGS=()
+      # Adds an option and its value, when the value is set
+      option() {
+        if [[ -n "$2" ]]; then
+          ARGS+=("$1" "$2")
+        fi
+      }
+
       # docpress gives its options precedence over the configuration file, so only the inputs
       # that are set are passed, and no default may stand in for a value of the file
-      ARGS=()
       if [[ -n "$INPUT_USERNAMES" ]]; then
         ARGS+=(--usernames "$INPUT_USERNAMES")
       elif [[ -z "$INPUT_CONFIG" ]]; then
         ARGS+=(--usernames "$GITHUB_REPOSITORY_OWNER")
       fi
-
-      [[ -n "$INPUT_BRANCH" ]] && ARGS+=(--branch "$INPUT_BRANCH")
-      [[ -n "$INPUT_REPOS_FILTER" ]] && ARGS+=(--repos-filter "$INPUT_REPOS_FILTER")
-      [[ -n "$INPUT_EXTRA_PUBLIC_CONTENT" ]] && ARGS+=(--extra-public-content "$INPUT_EXTRA_PUBLIC_CONTENT")
-      [[ -n "$INPUT_EXTRA_HEADER_PAGES" ]] && ARGS+=(--extra-header-pages "$INPUT_EXTRA_HEADER_PAGES")
-      [[ -n "$INPUT_EXTRA_THEME" ]] && ARGS+=(--extra-theme "$INPUT_EXTRA_THEME")
-      [[ -n "$INPUT_VITEPRESS_CONFIG" ]] && ARGS+=(--vitepress-config "$INPUT_VITEPRESS_CONFIG")
-      [[ "$INPUT_FORKS" == "true" ]] && ARGS+=(--forks)
-      [[ -n "$INPUT_CONFIG" ]] && ARGS+=(--config "$INPUT_CONFIG")
+      # forks is the name contributions had before docpress 0.14.0
+      if [[ "$INPUT_CONTRIBUTIONS" == "true" || "$INPUT_FORKS" == "true" ]]; then
+        ARGS+=(--contributions)
+      fi
+      if [[ "$INPUT_LAST_UPDATED" == "true" ]]; then
+        ARGS+=(--last-updated)
+      fi
+      option --acronyms "$INPUT_ACRONYMS"
+      option --branch "$INPUT_BRANCH"
+      option --config "$INPUT_CONFIG"
+      option --contributions-filter "$INPUT_CONTRIBUTIONS_FILTER"
+      option --extra-header-pages "$INPUT_EXTRA_HEADER_PAGES"
+      option --extra-public-content "$INPUT_EXTRA_PUBLIC_CONTENT"
+      option --extra-theme "$INPUT_EXTRA_THEME"
+      option --git-provider "$INPUT_GIT_PROVIDER"
+      option --log-level "$INPUT_LOG_LEVEL"
+      option --repos-filter "$INPUT_REPOS_FILTER"
+      option --sidebar-collapsed "$INPUT_SIDEBAR_COLLAPSED"
+      option --sidebar-mode "$INPUT_SIDEBAR_MODE"
+      option --vitepress-config "$INPUT_VITEPRESS_CONFIG"
+      option --website-tagline "$INPUT_WEBSITE_TAGLINE"
+      option --website-title "$INPUT_WEBSITE_TITLE"
 
       echo "🚀 Starting Docpress build process..."
       echo "docpress$(printf ' %q' "${ARGS[@]}")"

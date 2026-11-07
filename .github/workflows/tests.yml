@@ -10,7 +10,7 @@ on:
       EXTRA_PUBLIC_CONTENT:
         type: string
         required: false
-      FORKS:
+      CONTRIBUTIONS:
         type: boolean
         required: false
         default: true
@@ -43,8 +43,8 @@ on:
         description: Comma-separated list of additional files or directories for Vitepress public folder.
         type: string
         required: false
-      FORKS:
-        description: Create a dedicated fork page for external contributions.
+      CONTRIBUTIONS:
+        description: Create the contributions page.
         type: boolean
         required: false
         default: true
@@ -93,7 +93,7 @@ jobs:
       uses: ./
       with:
         branch: ${{ inputs.BRANCH }}
-        forks: ${{ inputs.forks }}
+        contributions: ${{ inputs.CONTRIBUTIONS }}
         deploy: ${{ inputs.deploy }}
         version: ${{ inputs.version }}
         extraPublicContent: ${{ inputs.EXTRA_PUBLIC_CONTENT }}
