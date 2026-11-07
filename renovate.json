@@ -20,6 +20,17 @@
     "labels": ["dependencies", "security"],
     "schedule": ["at any time"]
   },
+  "customManagers": [
+    {
+      "customType": "regex",
+      "description": "The docpress release the action runs by default, marked with a 'renovate:' comment above the default of the version input",
+      "managerFilePatterns": ["/^action\\.yml$/"],
+      "versioningTemplate": "semver",
+      "matchStrings": [
+        "# renovate: datasource=(?<datasource>[a-z-]+) depName=(?<depName>\\S+)\\s+default: (?<currentValue>\\S+)"
+      ]
+    }
+  ],
   "packageRules": [
     {
       "description": "Group non-major updates into a single PR to keep review cheap",
@@ -38,6 +49,16 @@
       "groupName": "actions run by the action",
       "semanticCommitType": "fix",
       "commitMessageTopic": "{{depName}}"
+    },
+    {
+      "description": "docpress is ours: a release reaches the action at once, in a PR of its own, as 'fix' for release-please to cut a release of the action and move the v0 tag",
+      "matchManagers": ["custom.regex"],
+      "matchDepNames": ["ghcr.io/this-is-tobi/docpress"],
+      "groupName": "docpress",
+      "semanticCommitType": "fix",
+      "commitMessageTopic": "docpress",
+      "minimumReleaseAge": null,
+      "schedule": ["at any time"]
     },
     {
       "description": "Actions used only by this repo's own CI/CD workflows don't affect consumers, so keep them as chores - no need to cut a release for internal tooling bumps.",
