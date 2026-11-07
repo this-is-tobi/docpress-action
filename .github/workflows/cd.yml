@@ -8,18 +8,7 @@ on:
     - ".github/**"
   workflow_dispatch:
 
-env:
-  BUN_VERSION: 1.3.14
-
 jobs:
-  expose-vars:
-    runs-on: ubuntu-latest
-    outputs:
-      BUN_VERSION: ${{ env.BUN_VERSION }}
-    steps:
-    - name: Exposing env vars
-      run: echo "Exposing env vars"
-
   release:
     uses: this-is-tobi/github-workflows/.github/workflows/release-app.yml@v0
     permissions:
