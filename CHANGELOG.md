@@ -1,5 +1,23 @@
 # Changelog
 
+## [0.2.0](https://github.com/this-is-tobi/docpress-action/compare/v0.1.3...v0.2.0) (2026-11-07)
+
+
+### Features
+
+* add an input for every docpress option ([d02179f](https://github.com/this-is-tobi/docpress-action/commit/d02179f82049853ba8fbc2319476a89a1de24e69))
+* name the pages artifact and expose the deployed url ([d658e1d](https://github.com/this-is-tobi/docpress-action/commit/d658e1d79cf0c3abc437551a4bab6519ddfcbf8f))
+
+
+### Bug Fixes
+
+* build in the workspace so the config file and extras are found ([02524c1](https://github.com/this-is-tobi/docpress-action/commit/02524c10484af236524f941e906a1ea6bb1dec6d))
+* pass only the options that are set ([fcc033f](https://github.com/this-is-tobi/docpress-action/commit/fcc033f8dae412e62bcc21749ceccaa5d3103350))
+* pass the token through the environment ([025f554](https://github.com/this-is-tobi/docpress-action/commit/025f55436c6cebcd4942da00f7a0a79b1ac80243))
+* pin the docpress version the action runs ([b4b5f64](https://github.com/this-is-tobi/docpress-action/commit/b4b5f642bca4cadf3c4f8781e9f6f27d991a6b64))
+* read the inputs from the environment ([8cdf9eb](https://github.com/this-is-tobi/docpress-action/commit/8cdf9eb08d45d8031d1a833f175d9e51e4964e5e))
+* use paths-ignore so CD actually triggers on push to main ([ce50ed3](https://github.com/this-is-tobi/docpress-action/commit/ce50ed3bf0075d77eb84e2cbfe2fc89deb4a9ee2))
+
 ## [0.1.3](https://github.com/this-is-tobi/docpress-action/compare/v0.1.2...v0.1.3) (2026-07-24)
 
 
