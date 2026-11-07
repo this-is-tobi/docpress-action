@@ -3,16 +3,14 @@ description: Build portfolio / doc website faster than light
 
 inputs:
   branch:
-    description: Branch used to collect Git provider data.
+    description: Branch used to collect Git provider data. Defaults to each repository's own default branch.
     required: false
-    default: main
   extraPublicContent:
     description: Comma-separated list of additional files or directories for Vitepress public folder.
     required: false
   forks:
-    description: Create a dedicated fork page for external contributions.
+    description: Set to "true" to create a dedicated page for external contributions.
     required: false
-    default: "false"
   extraHeaderPages:
     description: Comma-separated list of additional files for Vitepress header pages.
     required: false
@@ -26,13 +24,13 @@ inputs:
     description: Path to the Vitepress configuration file.
     required: false
   usernames:
-    description: Comma-separated list of git provider usernames to collect data.
+    description: Comma-separated list of git provider usernames to collect data. Defaults to the repository owner, unless a configuration file is given.
     required: false
   token:
     description: GitHub token to collect data.
     required: false
   config:
-    description: Path to the docpress configuration file.
+    description: Path to the docpress configuration file, relative to the repository root. Only the inputs that are set are passed to docpress, and they take precedence over the file.
     required: false
   version:
     description: Docpress version.
@@ -72,15 +70,22 @@ runs:
     run: |
       set -euo pipefail
 
-      ARGS=(--usernames "${INPUT_USERNAMES:-$GITHUB_ACTOR}")
-      ARGS+=(--branch "${INPUT_BRANCH:-main}")
+      # docpress gives its options precedence over the configuration file, so only the inputs
+      # that are set are passed, and no default may stand in for a value of the file
+      ARGS=()
+      if [[ -n "$INPUT_USERNAMES" ]]; then
+        ARGS+=(--usernames "$INPUT_USERNAMES")
+      elif [[ -z "$INPUT_CONFIG" ]]; then
+        ARGS+=(--usernames "$GITHUB_REPOSITORY_OWNER")
+      fi
 
+      [[ -n "$INPUT_BRANCH" ]] && ARGS+=(--branch "$INPUT_BRANCH")
       [[ -n "$INPUT_REPOS_FILTER" ]] && ARGS+=(--repos-filter "$INPUT_REPOS_FILTER")
       [[ -n "$INPUT_EXTRA_PUBLIC_CONTENT" ]] && ARGS+=(--extra-public-content "$INPUT_EXTRA_PUBLIC_CONTENT")
       [[ -n "$INPUT_EXTRA_HEADER_PAGES" ]] && ARGS+=(--extra-header-pages "$INPUT_EXTRA_HEADER_PAGES")
       [[ -n "$INPUT_EXTRA_THEME" ]] && ARGS+=(--extra-theme "$INPUT_EXTRA_THEME")
       [[ -n "$INPUT_VITEPRESS_CONFIG" ]] && ARGS+=(--vitepress-config "$INPUT_VITEPRESS_CONFIG")
-      [[ -n "$INPUT_FORKS" ]] && ARGS+=(--forks)
+      [[ "$INPUT_FORKS" == "true" ]] && ARGS+=(--forks)
       [[ -n "$INPUT_CONFIG" ]] && ARGS+=(--config "$INPUT_CONFIG")
 
       echo "🚀 Starting Docpress build process..."
