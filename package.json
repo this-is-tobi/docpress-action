@@ -2,7 +2,7 @@
   "name": "docpress-action",
   "type": "module",
   "version": "0.1.2",
-  "packageManager": "bun@1.3.14",
+  "packageManager": "bun@1.4.4",
   "homepage": "https://this-is-tobi.com/docpress-action/introduction",
   "repository": {
     "type": "git",
