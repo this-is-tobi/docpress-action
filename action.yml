@@ -27,7 +27,7 @@ inputs:
     description: Comma-separated list of git provider usernames to collect data. Defaults to the repository owner, unless a configuration file is given.
     required: false
   token:
-    description: GitHub token to collect data.
+    description: Token used to collect data from the Git provider. Defaults to the workflow token for GitHub.
     required: false
   config:
     description: Path to the docpress configuration file, relative to the repository root. Only the inputs that are set are passed to docpress, and they take precedence over the file.
@@ -63,10 +63,13 @@ runs:
       INPUT_EXTRA_THEME: ${{ inputs.extraTheme }}
       INPUT_FORKS: ${{ inputs.forks }}
       INPUT_REPOS_FILTER: ${{ inputs.reposFilter }}
-      INPUT_TOKEN: ${{ inputs.token }}
       INPUT_USERNAMES: ${{ inputs.usernames }}
       INPUT_VERSION: ${{ inputs.version }}
       INPUT_VITEPRESS_CONFIG: ${{ inputs.vitepressConfig }}
+      # docpress reads its token from the environment, which keeps it off the command line.
+      # An explicit token serves either provider; otherwise GitHub gets the workflow token
+      DOCPRESS_TOKEN: ${{ inputs.token }}
+      GITHUB_TOKEN: ${{ github.token }}
     run: |
       set -euo pipefail
 
@@ -91,13 +94,11 @@ runs:
       echo "🚀 Starting Docpress build process..."
       echo "docpress$(printf ' %q' "${ARGS[@]}")"
 
-      # Added after the arguments are printed, to keep the token out of the logs
-      [[ -n "$INPUT_TOKEN" ]] && ARGS+=(--token "$INPUT_TOKEN")
-
       # docpress resolves the config file, the extras and its output against its working
       # directory. The workspace is mounted below /app rather than at its own path, so that
       # module resolution still finds the image's dependencies in /app/node_modules
-      docker run --name docpress --rm -v "$(pwd):/app/workspace" -w /app/workspace --user root \
+      docker run --name docpress --rm -e DOCPRESS_TOKEN -e GITHUB_TOKEN \
+        -v "$(pwd):/app/workspace" -w /app/workspace --user root \
         "ghcr.io/this-is-tobi/docpress:$INPUT_VERSION" "${ARGS[@]}"
 
       echo "✅ Build completed successfully!"
