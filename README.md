@@ -69,7 +69,7 @@ Every docpress command line option has an input, named like the matching key of 
 | `vitepressConfig` | Path to the Vitepress configuration file. | - |
 | `websiteTagline` | Website tagline. | - |
 | `websiteTitle` | Website title. | - |
-| `version` | Docpress version, a tag of the ghcr.io/this-is-tobi/docpress image. Defaults to the latest 0.x release. | `0` |
+| `version` | Docpress version, a tag of the ghcr.io/this-is-tobi/docpress image. Defaults to the release pinned by this version of the action; `0` follows the latest 0.x release instead. | pinned release |
 | `deploy` | Whether or not to deploy generated website to GitHub Pages. | `false` |
 | `artifactName` | Name of the uploaded GitHub Pages artifact, to tell apart several builds in one workflow run. | `github-pages` |
 
@@ -95,6 +95,10 @@ A [docpress configuration file](https://github.com/this-is-tobi/docpress/blob/ma
 - Paths, in the inputs and in the file, are relative to the repository root.
 - Inputs that are set take precedence over the file, so keep each option in one place.
 - With a configuration file, the usernames no longer default to the repository owner: set them in the file or with `usernames`.
+
+## Docpress version
+
+Each release of the action runs an exact docpress release, so a workflow pinned to a version of the action always builds with the same docpress, and `@v0` moves to a new docpress through a new release of the action. Set `version` to run another tag of the [docpress image](https://github.com/this-is-tobi/docpress/pkgs/container/docpress): an exact release such as `0.14.0`, or `0` to follow the latest 0.x release.
 
 ## Token
 
