@@ -38,7 +38,8 @@ jobs:
       RUNTIME_VERSION: ${{ needs.expose-vars.outputs.BUN_VERSION }}
       PACKAGE_MANAGER: bun
 
-  tests:
+  # Inputs only: the usernames default to the repository owner
+  tests-inputs:
     uses: ./.github/workflows/tests.yml
     needs:
     - expose-vars
@@ -46,9 +47,23 @@ jobs:
       pages: write
       id-token: write
     with:
-      BRANCH: main
+      ARTIFACT_NAME: pages-inputs
       CONTRIBUTIONS: true
-      REPOS_FILTER: "homelab,docpress,dotfiles"
+      REPOS_FILTER: docpress
+      EXPECTED_FILES: index.html contributions.html docpress/introduction.html
+
+  # A configuration file with an extra header page and public content, that no input overrides
+  tests-config:
+    uses: ./.github/workflows/tests.yml
+    needs:
+    - expose-vars
+    permissions:
+      pages: write
+      id-token: write
+    with:
+      ARTIFACT_NAME: pages-config
+      CONFIG: ./tests/fixtures/config/docpress.config.json
+      EXPECTED_FILES: index.html fixture.html fixture.txt docpress-action/introduction.html
 
   # Workaround for required status check in protection branches (see. https://github.com/orgs/community/discussions/13690)
   all-jobs-passed:
@@ -58,7 +73,8 @@ jobs:
     needs:
     - expose-vars
     - lint
-    - tests
+    - tests-inputs
+    - tests-config
     steps:
     - name: Check status of all required jobs
       run: |-

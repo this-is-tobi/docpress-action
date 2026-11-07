@@ -1,0 +1,7 @@
+{
+  "usernames": ["this-is-tobi"],
+  "reposFilter": ["docpress-action"],
+  "extraHeaderPages": ["./tests/fixtures/config/pages"],
+  "extraPublicContent": ["./tests/fixtures/config/public"],
+  "websiteTitle": "Docpress action"
+}
