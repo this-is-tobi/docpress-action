@@ -38,7 +38,9 @@ jobs:
       RUNTIME_VERSION: ${{ needs.expose-vars.outputs.BUN_VERSION }}
       PACKAGE_MANAGER: bun
 
-  # Inputs only: the usernames default to the repository owner
+  # Inputs only: the usernames default to the repository owner. The contributions page is not
+  # expected: docpress skips it, without failing, when the GitHub search is rate limited or finds
+  # no merged pull request, so asserting it would make this job depend on live GitHub data
   tests-inputs:
     uses: ./.github/workflows/tests.yml
     needs:
@@ -50,7 +52,7 @@ jobs:
       ARTIFACT_NAME: pages-inputs
       CONTRIBUTIONS: true
       REPOS_FILTER: docpress
-      EXPECTED_FILES: index.html contributions.html docpress/introduction.html
+      EXPECTED_FILES: index.html docpress/introduction.html
 
   # A configuration file with an extra header page and public content, that no input overrides
   tests-config:
