@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.2.1](https://github.com/this-is-tobi/docpress-action/compare/v0.2.0...v0.2.1) (2026-11-11)
+
+
+### Bug Fixes
+
+* **deps:** update docpress to v0.15.1 ([3d96ab9](https://github.com/this-is-tobi/docpress-action/commit/3d96ab987a108a888c0cfe9bda81b4085597acf8))
+
 ## [0.2.0](https://github.com/this-is-tobi/docpress-action/compare/v0.1.3...v0.2.0) (2026-11-07)
 
 
